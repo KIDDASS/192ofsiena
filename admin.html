@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>192ofsiena - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e8dcc4;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: rgba(232, 220, 196, 0.6);
+            font-size: 14px;
+            letter-spacing: 0.15em;
+            text-transform: lowercase;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+        }
+
+        .panel {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(232, 220, 196, 0.15);
+            border-radius: 20px;
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: rgba(232, 220, 196, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+            margin-bottom: 24px;
+            color: #e8dcc4;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+            color: rgba(232, 220, 196, 0.7);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 52, 96, 0.2);
+            border: 1px solid rgba(232, 220, 196, 0.2);
+            border-radius: 12px;
+            color: #e8dcc4;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: rgba(232, 220, 196, 0.4);
+            background: rgba(15, 52, 96, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: block;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            display: block;
+            padding: 40px 20px;
+            background: rgba(15, 52, 96, 0.2);
+            border: 2px dashed rgba(232, 220, 196, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-label:hover {
+            background: rgba(15, 52, 96, 0.3);
+            border-color: rgba(232, 220, 196, 0.5);
+        }
+
+        .file-label svg {
+            display: block;
+            margin: 0 auto 16px;
+            opacity: 0.5;
+        }
+
+        .file-label span {
+            display: block;
+            font-size: 14px;
+            color: rgba(232, 220, 196, 0.6);
+            letter-spacing: 0.05em;
+        }
+
+        .file-name {
+            margin-top: 12px;
+            font-size: 13px;
+            color: rgba(232, 220, 196, 0.8);
+            text-align: center;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 32px;
+            background: rgba(232, 220, 196, 0.1);
+            border: 1px solid rgba(232, 220, 196, 0.3);
+            border-radius: 12px;
+            color: #e8dcc4;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: rgba(232, 220, 196, 0.15);
+            border-color: rgba(232, 220, 196, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+            display: none;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        .status.success {
+            background: rgba(67, 181, 129, 0.2);
+            border: 1px solid rgba(67, 181, 129, 0.3);
+            color: #43B581;
+        }
+
+        .status.error {
+            background: rgba(240, 71, 71, 0.2);
+            border: 1px solid rgba(240, 71, 71, 0.3);
+            color: #F04747;
+        }
+
+        .status.loading {
+            background: rgba(250, 166, 26, 0.2);
+            border: 1px solid rgba(250, 166, 26, 0.3);
+            color: #FAA61A;
+        }
+
+        .info-box {
+            background: rgba(15, 52, 96, 0.2);
+            border: 1px solid rgba(232, 220, 196, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+            margin-bottom: 12px;
+            color: #e8dcc4;
+        }
+
+        .info-box p {
+            font-size: 12px;
+            line-height: 1.6;
+            color: rgba(232, 220, 196, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .info-box code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #e8dcc4;
+        }
+
+        @media (max-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .panel {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>192ofsiena</h1>
+            <p>admin control panel</p>
+        </div>
+
+        <div class="panels">
+            <!-- Image Upload Panel -->
+            <div class="panel">
+                <h2>upload image</h2>
+                <form id="imageForm">
+                    <div class="form-group">
+                        <label for="githubToken">github token</label>
+                        <input type="password" id="githubToken" placeholder="ghp_..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>select image</label>
+                        <div class="file-upload">
+                            <input type="file" id="imageFile" accept="image/*" required>
+                            <label for="imageFile" class="file-label">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <span>click to select image</span>
+                            </label>
+                            <div class="file-name" id="fileName"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="uploadBtn">upload to gallery</button>
+                    <div class="status" id="imageStatus"></div>
+                </form>
+
+                <div class="info-box">
+                    <h3>requirements</h3>
+                    <p>• GitHub Personal Access Token with <code>repo</code> permissions</p>
+                    <p>• Repository: <code>KIDDASS/pictures</code></p>
+                    <p>• Supported formats: JPG, PNG, GIF, WebP</p>
+                </div>
+            </div>
+
+            <!-- Announcement Panel -->
+            <div class="panel">
+                <h2>post announcement</h2>
+                <form id="announcementForm">
+                    <div class="form-group">
+                        <label for="gistToken">github token (gist)</label>
+                        <input type="password" id="gistToken" placeholder="ghp_..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gistId">gist id</label>
+                        <input type="text" id="gistId" placeholder="c5d393d40dd58e29f230c49df85425ce" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="announcement">announcement text</label>
+                        <textarea id="announcement" placeholder="type your announcement here..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="webhookUrl">discord webhook url</label>
+                        <input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/..." required>
+                    </div>
+                    <button type="submit" class="btn" id="announceBtn">post announcement</button>
+                    <div class="status" id="announceStatus"></div>
+                </form>
+
+                <div class="info-box">
+                    <h3>how it works</h3>
+                    <p>1. Updates the GitHub Gist with your announcement</p>
+                    <p>2. 192ofsiena fetches the announcement every 60 seconds</p>
+                    <p>3. Sends notification to Discord webhook</p>
+                    <p>4. Can also use: <code>https://apisec.vercel.app/api/send</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Image upload handler
+        const imageForm = document.getElementById('imageForm');
+        const imageFile = document.getElementById('imageFile');
+        const fileName = document.getElementById('fileName');
+        const imageStatus = document.getElementById('imageStatus');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        imageFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileName.textContent = e.target.files[0].name;
+            }
+        });
+
+        imageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = document.getElementById('githubToken').value;
+            const file = imageFile.files[0];
+
+            if (!file) {
+                showStatus(imageStatus, 'error', 'please select an image');
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            showStatus(imageStatus, 'loading', 'uploading image...');
+
+            try {
+                // Convert file to base64
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const base64Content = event.target.result.split(',')[1];
+
+                    // Upload to GitHub
+                    const response = await fetch(`https://api.github.com/repos/KIDDASS/pictures/contents/${file.name}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: `Add ${file.name} via admin panel`,
+                            content: base64Content
+                        })
+                    });
+
+                    if (response.ok) {
+                        showStatus(imageStatus, 'success', 'image uploaded successfully!');
+                        imageForm.reset();
+                        fileName.textContent = '';
+                    } else {
+                        const error = await response.json();
+                        showStatus(imageStatus, 'error', error.message || 'upload failed');
+                    }
+                    uploadBtn.disabled = false;
+                };
+                reader.readAsDataURL(file);
+            } catch (error) {
+                showStatus(imageStatus, 'error', error.message);
+                uploadBtn.disabled = false;
+            }
+        });
+
+        // Announcement handler
+        const announcementForm = document.getElementById('announcementForm');
+        const announceStatus = document.getElementById('announceStatus');
+        const announceBtn = document.getElementById('announceBtn');
+
+        announcementForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const token = document.getElementById('gistToken').value;
+            const gistId = document.getElementById('gistId').value;
+            const announcement = document.getElementById('announcement').value;
+            const webhookUrl = document.getElementById('webhookUrl').value;
+
+            announceBtn.disabled = true;
+            showStatus(announceStatus, 'loading', 'posting announcement...');
+
+            try {
+                // Update Gist
+                const gistResponse = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            'anc.txt': {
+                                content: announcement
+                            }
+                        }
+                    })
+                });
+
+                if (!gistResponse.ok) {
+                    throw new Error('Failed to update gist');
+                }
+
+                // Send to Discord webhook
+                const webhookResponse = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: '📢 **New Announcement Posted**',
+                        embeds: [{
+                            title: '192ofsiena Announcement',
+                            description: announcement,
+                            color: 0xe8dcc4,
+                            timestamp: new Date().toISOString(),
+                            footer: {
+                                text: '192ofsiena • Admin Panel'
+                            }
+                        }]
+                    })
+                });
+
+                if (webhookResponse.ok || webhookResponse.status === 204) {
+                    showStatus(announceStatus, 'success', 'announcement posted successfully!');
+                    document.getElementById('announcement').value = '';
+                } else {
+                    showStatus(announceStatus, 'success', 'gist updated (webhook may have failed)');
+                }
+            } catch (error) {
+                showStatus(announceStatus, 'error', error.message);
+            }
+
+            announceBtn.disabled = false;
+        });
+
+        // Helper function
+        function showStatus(element, type, message) {
+            element.className = `status show ${type}`;
+            element.textContent = message;
+            
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    element.classList.remove('show');
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
